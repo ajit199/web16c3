@@ -6,12 +6,14 @@ const { v4: uuid } = require("uuid");
 app.use(expess.urlencoded({ extended: true }));
 app.use(expess.json());
 app.use((req, res, next) => {
-let apiKey = req.query.apiKey;
-// console.log(req.url);
-    if(apiKey)
-    {
-        next();
-    }
+  if (req.url === "/") {
+    next();
+  }
+  let apiKey = req.query.apiKey;
+  // console.log(req.url);
+  if (apiKey) {
+    next();
+  }
   if (
     req.url === "/user/create" ||
     req.url === "/user/login" ||
@@ -29,6 +31,10 @@ let apiKey = req.query.apiKey;
   }
 });
 
+app.get("/", (req, res) => {
+  res.send("App working");
+});
+
 app.get("/db", (req, res) => {
   let data = fs.readFileSync("./db.json", "utf-8");
   data = JSON.parse(data);
@@ -36,13 +42,13 @@ app.get("/db", (req, res) => {
 });
 
 app.post("/db", (req, res) => {
-    req.body.id = uuid();
-    let data = fs.readFileSync("./db.json", "utf-8");
-    data = JSON.parse(data);
-    data.users = [req.body];
-    fs.writeFileSync("./db.json", JSON.stringify(data), "utf-8");
-    res.status(201).json({ status: "user created", id: req.body.id });
-  });
+  req.body.id = uuid();
+  let data = fs.readFileSync("./db.json", "utf-8");
+  data = JSON.parse(data);
+  data.users = [req.body];
+  fs.writeFileSync("./db.json", JSON.stringify(data), "utf-8");
+  res.status(201).json({ status: "user created", id: req.body.id });
+});
 
 app.post("/user/create", (req, res) => {
   req.body.id = uuid();
